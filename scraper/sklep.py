@@ -1,4 +1,5 @@
 from . import BaseScraper
+from itemparser.base import SklepItemParser
 
 
 class SklepScraper(BaseScraper):
@@ -8,6 +9,8 @@ class SklepScraper(BaseScraper):
     container_element_attrs = {'id': 'filter__products'}
     items_element_attrs = {'class': 'col-sm-6 col-md-4 col-xs-12 product'}
     pages_number_element_attrs = {'class': 'pagination__input'}
+
+    item_parser = SklepItemParser
 
     def get_pages_container(self, container):
         container = super().get_pages_container(container)

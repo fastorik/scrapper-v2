@@ -10,6 +10,7 @@ class BaseScraper:
     pages_number_element_attrs = None
     start_url = None
     url_pattern = None
+    item_parser = None
 
     def __init__(self):
         self.api = Firefox()  # TODO: user defined
@@ -40,11 +41,15 @@ class BaseScraper:
 
     def parse(self):
         items = map(self.parse_page_items, self.pages)
-        items = list(chain.from_iterable(items))
+        items = list(map(self.to_item_model, chain.from_iterable(items)))
 
         self.api.quit()
 
         return items
+
+    def to_item_model(self, container):
+        # print(container)
+        return self.item_parser(container).get_parsed_item()
 
     def parse_page_items(self, page_url):
         self.api.get(url=page_url)

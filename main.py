@@ -5,4 +5,11 @@ scr = ScrapingManager(SklepScraper, AtafScraper)
 
 items = scr.scrap()
 
-print(len(items))
+print(items)
+
+# print(AtafScraper.__name__)
+
+# scr = AtafScraper()
+# items = scr.parse()
+#
+# print(items)

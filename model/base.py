@@ -5,6 +5,9 @@ from typing import List
 @dataclass
 class BaseItem:
     name: str
-    price: float
+    price: str
     sizes: List[str]
     url: str
+
+    def __str__(self):
+        return f'{self.name}|{self.price}|{self.sizes}|{self.url}'
