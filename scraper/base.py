@@ -11,9 +11,11 @@ class BaseScraper:
     start_url = None
     url_pattern = None
     item_parser = None
+    api_class = None
+    api_kwargs = None
 
     def __init__(self):
-        self.api = Firefox()  # TODO: user defined
+        self.api = self.api_class(**self.api_kwargs)  # TODO: user defined
         self.selector = BeautifulSoup
         self.setup()
 

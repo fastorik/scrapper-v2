@@ -1,5 +1,7 @@
 from . import BaseScraper
-from itemparser.base import SklepItemParser
+from itemparser.sklep import SklepItemParser
+from driver.base import SessionDriver
+import requests
 
 
 class SklepScraper(BaseScraper):
@@ -11,6 +13,14 @@ class SklepScraper(BaseScraper):
     pages_number_element_attrs = {'class': 'pagination__input'}
 
     item_parser = SklepItemParser
+
+    api_class = SessionDriver
+    api_kwargs = {
+        'headers': {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36'
+        },
+        'mount': requests.sessions.HTTPAdapter(max_retries=10)
+    }
 
     def get_pages_container(self, container):
         container = super().get_pages_container(container)

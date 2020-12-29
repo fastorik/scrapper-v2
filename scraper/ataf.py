@@ -1,5 +1,5 @@
 from . import BaseScraper
-from itemparser.base import AtafItemParser
+from itemparser.ataf import AtafItemParser
 
 
 class AtafScraper(BaseScraper):
