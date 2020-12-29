@@ -1,4 +1,3 @@
-from selenium.webdriver import Firefox
 from bs4 import BeautifulSoup
 import re
 from itertools import chain
@@ -12,7 +11,7 @@ class BaseScraper:
     url_pattern = None
     item_parser = None
     api_class = None
-    api_kwargs = None
+    api_kwargs = {}
 
     def __init__(self):
         self.api = self.api_class(**self.api_kwargs)  # TODO: user defined
@@ -51,7 +50,7 @@ class BaseScraper:
 
     def to_item_model(self, container):
         # print(container)
-        return self.item_parser(container).get_parsed_item()
+        return self.item_parser(container).build_parsed_item()
 
     def parse_page_items(self, page_url):
         self.api.get(url=page_url)

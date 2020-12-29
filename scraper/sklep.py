@@ -1,6 +1,6 @@
 from . import BaseScraper
 from itemparser.sklep import SklepItemParser
-from driver.base import SessionDriver
+from driver.session import SessionDriver
 import requests
 
 

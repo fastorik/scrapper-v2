@@ -1,5 +1,6 @@
 from . import BaseScraper
 from itemparser.ataf import AtafItemParser
+from driver.selenium import FirefoxDriver
 
 
 class AtafScraper(BaseScraper):
@@ -10,6 +11,8 @@ class AtafScraper(BaseScraper):
     items_element_attrs = {'class': 'col-md-6 col-lg-4 no-pad'}
 
     item_parser = AtafItemParser
+
+    api_class = FirefoxDriver
 
     def get_pages_number(self, container):
         return 7

@@ -1,34 +1,13 @@
 from scraper import SklepScraper, AtafScraper
 from manager.scraping import ScrapingManager
-
-# scr = ScrapingManager(SklepScraper, AtafScraper)
-#
-# items = scr.scrap()
-#
-# print(items)
-
-# print(AtafScraper.__name__)
-
-scr = SklepScraper()
-items = scr.parse()
-
-print(len(items))
+from utils.images import ImageDownloader
 
 
-# class PropertyTest:
-#
-#     @property
-#     def text(self):
-#         return self._text()
-#
-#     def _text(self):
-#         pass
-#
-#
-# class IheritedTest(PropertyTest):
-#     def _text(self):
-#         return 'jopa'
-#
-#
-# tst = IheritedTest()
-# print(tst.text)
+if __name__ == '__main__':
+    scr = ScrapingManager(SklepScraper)
+
+    items = scr.scrap()
+
+    ImageDownloader.download(list(map(lambda x: x.image_url, items)))
+
+
