@@ -4,7 +4,7 @@ def attr_error_catcher(func, default='Unknown'):
             data = func(*args, **kwargs)
         except Exception as e:
             data = default
-            print(f'Error: {e}')
+            print(f'Error: {e}; Args:{args}; Kwargs:{kwargs}; Func name: {func.__name__}')
 
         return data
     return wrapper

@@ -1,3 +1,6 @@
+from concurrent.futures.process import ProcessPoolExecutor
+from concurrent.futures.thread import ThreadPoolExecutor
+
 from bs4 import BeautifulSoup
 import re
 from itertools import chain
@@ -14,7 +17,7 @@ class BaseScraper:
     api_kwargs = {}
 
     def __init__(self):
-        self.api = self.api_class(**self.api_kwargs)  # TODO: user defined
+        self.api = None  # TODO: user defined
         self.selector = BeautifulSoup
         self.setup()
 
@@ -40,11 +43,13 @@ class BaseScraper:
 
         return pages_number
 
-    def parse(self):
-        items = map(self.parse_page_items, self.pages)
-        items = list(map(self.to_item_model, chain.from_iterable(items)))
+    def parse(self, executor=None):
+        map_ = executor.map if executor else map
 
-        self.api.quit()
+        # with ThreadPoolExecutor(max_workers=4) as executor:
+        with self.api_class(**self.api_kwargs) as self.api:
+            items = map_(self.parse_page_items, self.pages)
+            items = list(map(self.to_item_model, chain.from_iterable(items)))
 
         return items
 
@@ -55,6 +60,8 @@ class BaseScraper:
     def parse_page_items(self, page_url):
         self.api.get(url=page_url)
         soup = self.selector(self.api.page_source, 'html.parser')  # TODO: user defined behaviour
+        print(f'Parser name: {self.__class__.__name__}')
+        print(soup)
 
         container = self.get_items_container(soup)
 
@@ -66,5 +73,5 @@ class BaseScraper:
 
         pages_number = self.get_pages_number(self.selector(self.api.page_source, 'html.parser'))
 
-        print(pages_number)
+        print(f'Pages number: {pages_number}')
         return map(lambda x: self.url_pattern.format(x), range(1, pages_number+1))

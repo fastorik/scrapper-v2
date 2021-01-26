@@ -9,3 +9,9 @@ class AtafItemParser(BaseItemParser):
     sizes_attrs = {'data-size': re.compile(r'\w+')}
 
     url_wrapping_tag = 'a'
+
+    def get_image_url(self):
+        return 'image.url'
+
+    def get_article(self):
+        return 12345

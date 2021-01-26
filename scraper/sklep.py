@@ -1,3 +1,5 @@
+from concurrent.futures.thread import ThreadPoolExecutor
+
 from . import BaseScraper
 from itemparser.sklep import SklepItemParser
 from driver.session import SessionDriver
@@ -21,6 +23,10 @@ class SklepScraper(BaseScraper):
         },
         'mount': requests.sessions.HTTPAdapter(max_retries=10)
     }
+
+    def parse(self, executor=None):
+        with ThreadPoolExecutor(max_workers=4) as executor:
+            return super().parse(executor)
 
     def get_pages_container(self, container):
         container = super().get_pages_container(container)
