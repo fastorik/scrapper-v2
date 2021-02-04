@@ -24,6 +24,10 @@ class BaseDriver(ABC):
     def get_page_source(self):
         pass
 
+    def get_page_with_source(self, url):
+        self.get(url)
+        return self.page_source
+
     def __enter__(self):
         return self
 

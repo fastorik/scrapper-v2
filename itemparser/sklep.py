@@ -13,3 +13,6 @@ class SklepItemParser(BaseItemParser):
     img_wrapping_tag = 'img'
 
     img_url_attr = 'data-echo'
+
+    def parse_article(self, container):
+        return super().parse_article(container).get_text()

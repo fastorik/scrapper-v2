@@ -1,5 +1,5 @@
-from concurrent.futures.process import ProcessPoolExecutor
-from concurrent.futures.thread import ThreadPoolExecutor
+# from concurrent.futures.process import ProcessPoolExecutor
+# from concurrent.futures.thread import ThreadPoolExecutor
 
 from bs4 import BeautifulSoup
 import re
@@ -12,7 +12,9 @@ class BaseScraper:
     pages_number_element_attrs = None
     start_url = None
     url_pattern = None
+
     item_parser = None
+
     api_class = None
     api_kwargs = {}
 
@@ -46,22 +48,20 @@ class BaseScraper:
     def parse(self, executor=None):
         map_ = executor.map if executor else map
 
-        # with ThreadPoolExecutor(max_workers=4) as executor:
         with self.api_class(**self.api_kwargs) as self.api:
             items = map_(self.parse_page_items, self.pages)
-            items = list(map(self.to_item_model, chain.from_iterable(items)))
+            # print(list(items))
+            items = self.get_parsed_items(chain.from_iterable(items))
+            # items = list(map(self.to_item_model, chain.from_iterable(items)))
 
         return items
 
-    def to_item_model(self, container):
-        # print(container)
-        return self.item_parser(container).build_parsed_item()
+    def get_parsed_items(self, items):
+        return self.item_parser(list(items).copy(), self).get_parsed_items()
 
     def parse_page_items(self, page_url):
         self.api.get(url=page_url)
         soup = self.selector(self.api.page_source, 'html.parser')  # TODO: user defined behaviour
-        print(f'Parser name: {self.__class__.__name__}')
-        print(soup)
 
         container = self.get_items_container(soup)
 

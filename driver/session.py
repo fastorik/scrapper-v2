@@ -5,7 +5,7 @@ from requests_html import HTMLSession
 class SessionDriver(BaseDriver):
     driver_class = HTMLSession
 
-    def __init__(self, headers, mount, **kwargs):
+    def __init__(self, headers, mount=None, **kwargs):
         super().__init__(**kwargs)
         self.driver.headers = headers
         self.driver.mount = mount

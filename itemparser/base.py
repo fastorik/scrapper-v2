@@ -15,41 +15,62 @@ class BaseItemParser:
 
     img_url_attr = None
 
-    def __init__(self, container):
-        self.container = container
+    item_model = Sneaker
+
+    def __init__(self, items, scraper):
+        self.items = items
+        self.scraper = scraper
         self.setup()
 
     def setup(self):
         for key in filter(lambda x: 'attrs' in x, self.__class__.__dict__):  # TODO: names to variables
             setattr(self, key, {'attrs': self.__class__.__dict__[key]})
 
-        attrs = starmap(getattr, list(zip(repeat(self), filter(lambda x: 'get_' in x, dir(self)))))
-
-        for attr in attrs:
+        for attr in self._main_attrs():
             setattr(self, attr.__name__, attr_error_catcher(attr))
 
-    def get_name(self):
-        return self.container.find(**self.name_attrs).get_text()
+    def parse_name(self, container):
+        return container.find(**self.name_attrs).get_text()
 
-    def get_price(self):
-        return self.container.find(**self.price_attrs).get_text()
+    def parse_price(self, container):
+        return container.find(**self.price_attrs).get_text()
 
-    def get_url(self):
-        return self.container.find(self.url_wrapping_tag)['href']
+    def parse_url(self, container):
+        return container.find(self.url_wrapping_tag)['href']
 
-    def get_sizes(self):
-        return list(map(lambda x: x.get_text(), self.container.find_all(**self.sizes_attrs)))
+    def parse_sizes(self, container):
+        return [item.get_text() for item in container.find_all(**self.sizes_attrs)]
+        # return list(map(lambda x: x.get_text(), container.find_all(**self.sizes_attrs)))
 
-    def get_image_url(self):
-        return self.container.find(self.img_wrapping_tag)[self.img_url_attr]
+    def parse_image_url(self, container):
+        return container.find(self.img_wrapping_tag)[self.img_url_attr]
 
-    def get_article(self):
-        return self.container.find(**self.article_attrs).get_text()
+    def parse_article(self, container):
+        return container.find(**self.article_attrs)
 
-    def build_parsed_item(self):
-        return Sneaker(name=self.get_name(),
-                       price=self.get_price(),
-                       url=self.get_url(),
-                       sizes=self.get_sizes(),
-                       image_url=self.get_image_url(),
-                       article=self.get_article())
+    def get_item_attrs(self, container, exclude=None):
+        attrs = {
+            attr.__name__[len('parse_'):]: attr(container)
+            for attr in self._main_attrs()
+            if not exclude or attr.__name__[len('parse_'):] not in exclude
+        }
+
+        return attrs
+
+    def get_parsed_item(self, container):
+        item_attrs = self.get_item_attrs(container)
+
+        return self.item_model(**item_attrs)
+
+    def get_parsed_items(self):
+        containers = self.get_containers()
+        items = [self.get_parsed_item(container) for container in containers]
+
+        return items
+
+    def get_containers(self):
+        return self.items
+
+    def _main_attrs(self):
+        attrs = list(starmap(getattr, list(zip(repeat(self), filter(lambda x: 'parse_' in x, dir(self))))))
+        return attrs

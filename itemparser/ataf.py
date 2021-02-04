@@ -1,8 +1,9 @@
-from .base import BaseItemParser
+from itemparser.inner import InnerItemParser
+# from .base import BaseItemParser
 import re
 
 
-class AtafItemParser(BaseItemParser):
+class AtafItemParser(InnerItemParser):
     price_attrs = {'class': 'slider-price'}
     name_attrs = {'class': 'slider-product'}
     url_attrs = None
@@ -10,8 +11,12 @@ class AtafItemParser(BaseItemParser):
 
     url_wrapping_tag = 'a'
 
-    def get_image_url(self):
-        return 'image.url'
+    article_attrs = {'itemprop': 'sku'}
 
-    def get_article(self):
-        return 12345
+    img_wrapping_tag = 'img'
+    img_url_attr = 'src'
+
+    def parse_article(self, container):
+        main_container = super().parse_article(container)
+        return main_container['content']
+
